@@ -12,7 +12,7 @@ def imap_fetch():
     for msg_id in data[0].split():
         _, msg_data = imap.fetch(msg_id, "(RFC822)")
         msg = email.message_from_bytes(msg_data[0][1])
-        if msg["To"] == "demo":
+        if msg["To"] == "demo@localhost":
             messages += f"From: {msg['From']}\nSubject: {msg['Subject']}"
             messages += "\nBody: \n"
             if msg.is_multipart():
