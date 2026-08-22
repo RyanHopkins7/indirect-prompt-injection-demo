@@ -12,15 +12,20 @@ def imap_fetch():
     for msg_id in data[0].split():
         _, msg_data = imap.fetch(msg_id, "(RFC822)")
         msg = email.message_from_bytes(msg_data[0][1])
-        messages += f"From: {msg['From']} | Subject: {msg['Subject']}"
-        if msg.is_multipart():
-            for part in msg.walk():
-                if part.get_content_type() == "text/plain":
-                    messages += part.get_payload(decode=True).decode(errors="replace")
-        else:
-            messages += msg.get_payload(decode=True).decode(errors="replace")
+        if msg["To"] == "demo":
+            messages += f"From: {msg['From']}\nSubject: {msg['Subject']}"
+            messages += "\nBody: \n"
+            if msg.is_multipart():
+                for part in msg.walk():
+                    if part.get_content_type() == "text/plain":
+                        messages += part.get_payload(decode=True).decode(errors="replace")
+            else:
+                messages += msg.get_payload(decode=True).decode(errors="replace")
 
     imap.logout()
+
+    if messages == "":
+        messages = "The maibox for demo@localhost is empty."
 
     return messages
 

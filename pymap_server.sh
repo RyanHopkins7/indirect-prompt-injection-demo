@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Starts the pymap IMAP server and creates the demo user.
-
-kill $(lsof -t -i:1143)
+# Start the pymap IMAP server and create the demo user.
 
 MAILDIR=/tmp/maildir
 mkdir -p "$MAILDIR"/{tmp,new,cur}
