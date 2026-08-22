@@ -1,4 +1,7 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
+import json
+from imap_fetch import imap_fetch
+from smtp_send import send_email
 
 model_name = "Qwen/Qwen2.5-1.5B-Instruct"
 
@@ -41,17 +44,11 @@ system_message = {
     "content": "You are Qwen, a helpful email assistant. Your job is to help the user manage their emails and perform any email-related tasks."
 }
 
-while True:
-    prompt = input("How can I help you manage your emails today? ")
+def model_process_messages(messages):
+    print("Messages:", messages)
 
     text = tokenizer.apply_chat_template(
-        [
-            system_message, 
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
+        messages,
         tools=tools,
         tokenize=False,
         add_generation_prompt=True
@@ -69,4 +66,27 @@ while True:
     ]
 
     response = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
-    print(response)
+
+    if response[:11] == "<tool_call>":
+        print(response)
+
+        lines = response.split("\n")
+        command = json.loads(lines[1])
+        arguments = command["arguments"]
+        command_output = ""
+
+        if command["name"] == "READ_EMAILS":
+            command_output = imap_fetch()
+        elif command["name"] == "SEND_EMAIL":
+            command_output = send_email(arguments["sender"], arguments["recipient"], arguments["subject"], arguments["body"])
+
+        return model_process_messages(messages + [{"role": "tool", "content": command_output}])
+
+    return response
+
+while True:
+    prompt = input("How can I help you manage your emails today? ")
+
+    response = model_process_messages([system_message, {"role": "user", "content": prompt}])
+
+    print("Qwen: " + response)
