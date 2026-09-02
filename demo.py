@@ -54,11 +54,13 @@ def model_process_messages(messages):
         add_generation_prompt=True
     )
 
+    print("TEMPLATED TEXT:\n", text)
+
     model_inputs = tokenizer([text], return_tensors="pt").to(model.device)
 
     generated_ids = model.generate(
         **model_inputs,
-        max_new_tokens=1024,
+        max_new_tokens=2048,
         do_sample=False
     )
     generated_ids = [
