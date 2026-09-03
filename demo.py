@@ -1,5 +1,6 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import json
+import re
 from imap_fetch import imap_fetch
 from smtp_send import send_email
 
@@ -91,6 +92,9 @@ def model_process_messages(messages):
         command_output = command_output.replace("</tool_response>", "")
         command_output = command_output.replace("<|im_start|>", "")
         command_output = command_output.replace("<|im_end|>", "")
+
+        command_output = command_output.replace("<", "&lt;")
+        command_output = command_output.replace(">", "&gt;")
 
         return model_process_messages(messages + [{"role": "tool", "content": command_output}])
 
