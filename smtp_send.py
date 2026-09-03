@@ -13,7 +13,7 @@ def send_email(sender, recipient, subject, body, host="localhost", port=1025):
     with smtplib.SMTP(host, port) as smtp:
         smtp.send_message(msg)
 
-    return f"Successfully sent email from {sender} to {recipient}"
+    return f"Successfully sent email with subject '{subject}' from {sender} to {recipient}"
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Send an email via a local SMTP server.")
