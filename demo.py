@@ -86,6 +86,12 @@ def model_process_messages(messages):
         elif command["name"] == "SEND_EMAIL":
             command_output = send_email(arguments["sender"], arguments["recipient"], arguments["subject"], arguments["body"])
 
+        # Sanitize command output
+        command_output = command_output.replace("<tool_response>", "")
+        command_output = command_output.replace("</tool_response>", "")
+        command_output = command_output.replace("<|im_start|>", "")
+        command_output = command_output.replace("<|im_end|>", "")
+
         return model_process_messages(messages + [{"role": "tool", "content": command_output}])
 
     return response
