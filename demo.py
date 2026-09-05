@@ -3,6 +3,9 @@ import json
 from imap_fetch import imap_fetch
 from smtp_send import send_email
 
+LOCAL_EMAIL = 'demo@localhost'
+LOCAL_DOMAIN = 'localhost'
+
 model_name = "Qwen/Qwen2.5-1.5B-Instruct"
 
 model = AutoModelForCausalLM.from_pretrained(
@@ -84,7 +87,23 @@ def model_process_messages(messages):
         if command["name"] == "READ_EMAILS":
             command_output = imap_fetch()
         elif command["name"] == "SEND_EMAIL":
-            command_output = send_email(arguments["sender"], arguments["recipient"], arguments["subject"], arguments["body"])
+            sender = arguments["sender"]
+            recipient = arguments["recipient"]
+            recipient_domain = recipient.rsplit("@", 2)[1]
+            subject = arguments["subject"]
+            body = arguments["body"]
+
+            if sender != LOCAL_EMAIL or recipient_domain != LOCAL_DOMAIN:
+                print(f"From: {sender}")
+                print(f"To: {recipient}")
+                print(f"Subject: {subject}")
+                print("Email body:")
+                print(body)
+                user_response = input(f"Qwen is requesting permission to send this email. Do you want to send this email? (y/n) ")
+                if user_response != 'y':
+                    return model_process_messages(messages + [{"role": "tool", "content": f"The user denied permission to send an email from {sender} to {recipient} with subject {subject}."}])
+
+            command_output = send_email(sender, recipient, subject, body)
 
         # Sanitize command output
         command_output = command_output.replace("<", "&lt;")
