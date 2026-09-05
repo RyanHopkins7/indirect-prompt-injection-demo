@@ -96,7 +96,7 @@ Return a response to the original prompt: {messages[1]['content']}"}]
         elif command["name"] == "SEND_EMAIL":
             sender = arguments["sender"]
             recipient = arguments["recipient"]
-            recipient_domain = recipient.rsplit("@", 2)[1]
+            recipient_domain = recipient.rsplit("@", 1)[1]
             subject = arguments["subject"]
             body = arguments["body"]
 
