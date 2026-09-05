@@ -81,7 +81,8 @@ def model_process_messages(messages, last_tool_call_hash = None):
         if last_tool_call_hash is not None and hash(response) == last_tool_call_hash:
             return model_process_messages(
                 messages + [{"role": "tool", "content": f"The tool call\n{response}\nIs the same as the previous tool call. You may not repeat tool calls. \
-Return a response to the original prompt: {messages[1]['content']}"}]
+Return a response to the original prompt: {messages[1]['content']}"}], 
+                last_tool_call_hash
             )
 
         print(response)
