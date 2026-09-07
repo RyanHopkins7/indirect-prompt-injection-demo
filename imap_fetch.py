@@ -14,7 +14,7 @@ def imap_fetch(email_addr="demo@localhost", host="localhost", port=1143):
         _, msg_data = imap.fetch(msg_id, "(RFC822)")
         msg = email.message_from_bytes(msg_data[0][1])
         if msg["To"] == email_addr:
-            messages += f"From: {msg['From']}\nSubject: {msg['Subject']}"
+            messages += f"From: {msg['From']}\nTo: {msg['To']}\nSubject: {msg['Subject']}"
             messages += "\nBody: \n"
             if msg.is_multipart():
                 for part in msg.walk():

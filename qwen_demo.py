@@ -1,4 +1,7 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
+import logging
+
+logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
 
 model_name = "Qwen/Qwen2.5-1.5B-Instruct"
 
@@ -30,6 +33,7 @@ while True:
         max_new_tokens=512,
         do_sample=False
     )
+    # Strip the input tokens off so only the newly generated text gets decoded
     generated_ids = [
         output_ids[len(input_ids):] for input_ids, output_ids in zip(model_inputs.input_ids, generated_ids)
     ]
